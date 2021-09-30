@@ -10,7 +10,7 @@ User = get_user_model()
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = 'id', 'name', 'num_chairs', 'has_desk', 'has_projector', 'description'
+        fields = 'id', 'name', 'url', 'num_chairs', 'has_desk', 'has_projector', 'description'
 
 
 class ScheduleSerializer(serializers.ModelSerializer):

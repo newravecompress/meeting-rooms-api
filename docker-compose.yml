@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    #    command: python manage.py runserver 0.0.0.0:8000
+    #    ports:
+    #      - 8000:8000
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --reload
+    expose:
+      - 8000
+    volumes:
+      - .:/home/app/web
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    env_file:
+      - .config/env/dev.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .config/env/dev.db.env
+
+  nginx:
+    #    image: nginx
+    build: .config/nginx
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    ports:
+      - '80:80'
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

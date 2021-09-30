@@ -1,21 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from . import Room
+from .time_stamped_model import TimeStampedModel
+
 User = get_user_model()
-
-
-class Room(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    num_chairs = models.PositiveSmallIntegerField()
-    has_desk = models.BooleanField(blank=True, default=False)
-    has_projector = models.BooleanField(blank=True, default=False)
-    description = models.TextField(max_length=1000, blank=True)
-
-    class Meta:
-        ordering = 'name',
-
-    def __str__(self):
-        return self.name
 
 
 class ScheduleStatus:
@@ -24,13 +13,14 @@ class ScheduleStatus:
     CANCELLED = 'C'
 
 
-class Schedule(models.Model):
-    STATUS = (
-        (ScheduleStatus.NEW, 'New'),
-        (ScheduleStatus.RESERVED, 'Reserved'),
-        (ScheduleStatus.CANCELLED, 'Cancelled')
-    )
+STATUS = (
+    (ScheduleStatus.NEW, 'New'),
+    (ScheduleStatus.RESERVED, 'Reserved'),
+    (ScheduleStatus.CANCELLED, 'Cancelled')
+)
 
+
+class Schedule(TimeStampedModel):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='schedule')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule')
     date = models.DateField()
@@ -44,3 +34,13 @@ class Schedule(models.Model):
 
     def __str__(self):
         return f'{self.room.name}'
+
+    class Fields:
+        ID = 'id'
+        ROOM = 'room'
+        USER = 'user'
+        DATE = 'date'
+        TIME_START = 'time_start'
+        TIME_END = 'time_end'
+        STATUS = 'status'
+        COMMENT = 'comment'
